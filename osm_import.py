@@ -14,9 +14,9 @@ MAPPING_NAME = "base_places"
 
 class OSMHandler(handler.ContentHandler):
 
-    def __init__(self, mapping):
+    def __init__(self, config, mapping):
         self.conn = ES('http://127.0.0.1:9200')
-        self.conn.create_index(INDEX_NAME)
+        self.conn.create_index(INDEX_NAME, settings=config)
         self.conn.put_mapping(MAPPING_NAME, {'properties': mapping}, [INDEX_NAME])
 
     def startDocument(self):
@@ -55,11 +55,14 @@ class OSMHandler(handler.ContentHandler):
                 min_ = min(min_[0], lon), min(min_[1], lat)
                 max_ = max(max_[0], lon), max(max_[1], lat)
             location = (min_[0] + max_[0]) / 2, (min_[1] + max_[1]) / 2
-        if element_type in ['way', 'node'] and 'amenity' in self.tags:
+        if element_type in ['way', 'node'] and any([x in self.tags for x in ['amenity', 'naptan:AtcoCode']]):
             result = dict([('osm:%s' % k, v) for k, v in self.tags.items()])
             result['osm:type'] = element_type
             result['osm:version'] = self.attrs['version']
             result['identifiers'] = ['osm:%s' % self.id]
+            atco = self.tags.get('naptan:AtcoCode', None)
+            if atco:
+                result['identifiers'].append('atco:%s' % atco)
             # Some ameneties do not have names, this is correct behaviour.
             # For example, post boxes and car parks.
             result['name'] = self.tags.get('name', self.tags.get('operator', None))
@@ -67,6 +70,22 @@ class OSMHandler(handler.ContentHandler):
             self.conn.index(result, INDEX_NAME, MAPPING_NAME)
 
 if __name__ == '__main__':
+    config = {
+            'index': {
+                'analysis': {
+                    'tokenizer': {
+                        'tokenizer-categories': {
+                            'type': 'path_hierarchy'
+                            }
+                        },
+                    'analyzer': {
+                        'analyzer-categories': {
+                            'tokenizer': 'tokenizer-categories'
+                            }
+                        }
+                    }
+                }
+            }
     mapping = {
             'identifiers': {
                 'type': 'string',
@@ -74,12 +93,16 @@ if __name__ == '__main__':
                 'index': 'not_analyzed',
                 'index_name': 'identifier',
                 },
+            'categories': {
+                'type': 'object',
+                'analyzer': 'analyzer-categories',
+                },
             'location': {
                 'type': 'geo_point',
                 }
             }
     parser = make_parser(['xml.sax.xmlreader.IncrementalParser'])
-    parser.setContentHandler(OSMHandler(mapping))
+    parser.setContentHandler(OSMHandler(config, mapping))
     # Parse in 8k chunks
     osm = open('oxfordshire.osm')
     buffer = osm.read(8192)
