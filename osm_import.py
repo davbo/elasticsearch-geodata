@@ -2,22 +2,18 @@ import bz2  # TODO: Import using a bzip compressed file
 import logging
 
 from xml.sax import handler, make_parser
-
-from pyes import ES, TermQuery
+from data.es import ElasticSearch
 
 h = logging.StreamHandler()
 logger = logging.getLogger(__name__)
 logger.addHandler(h)
 INDEX_NAME = "places"
-MAPPING_NAME = "base_places"
 
 
 class OSMHandler(handler.ContentHandler):
 
-    def __init__(self, config, mapping):
-        self.conn = ES('http://127.0.0.1:9200')
-        self.conn.create_index(INDEX_NAME, settings=config)
-        self.conn.put_mapping(MAPPING_NAME, {'properties': mapping}, [INDEX_NAME])
+    def __init__(self, config, mappings):
+        self.es = ElasticSearch('http://127.0.0.1:9200', 'places', config, mappings)
 
     def startDocument(self):
         self.tags = {}
@@ -67,7 +63,11 @@ class OSMHandler(handler.ContentHandler):
             # For example, post boxes and car parks.
             result['name'] = self.tags.get('name', self.tags.get('operator', None))
             result['location'] = location
-            self.conn.index(result, INDEX_NAME, MAPPING_NAME)
+            self.es.index(result, 'poi')
+
+    def endDocument(self):
+        print self.es.count_updated
+        print self.es.count_created
 
 if __name__ == '__main__':
     config = {
@@ -86,23 +86,24 @@ if __name__ == '__main__':
                     }
                 }
             }
-    mapping = {
-            'identifiers': {
-                'type': 'string',
-                'store': 'yes',
-                'index': 'not_analyzed',
-                'index_name': 'identifier',
-                },
-            'categories': {
-                'type': 'object',
-                'analyzer': 'analyzer-categories',
-                },
-            'location': {
-                'type': 'geo_point',
+    mappings = {'poi': {
+                'identifiers': {
+                    'type': 'string',
+                    'store': 'yes',
+                    'index': 'not_analyzed',
+                    'index_name': 'identifier',
+                    },
+                'categories': {
+                    'type': 'object',
+                    'analyzer': 'analyzer-categories',
+                    },
+                'location': {
+                    'type': 'geo_point',
+                    }
                 }
             }
     parser = make_parser(['xml.sax.xmlreader.IncrementalParser'])
-    parser.setContentHandler(OSMHandler(config, mapping))
+    parser.setContentHandler(OSMHandler(config, mappings))
     # Parse in 8k chunks
     osm = open('oxfordshire.osm')
     buffer = osm.read(8192)
