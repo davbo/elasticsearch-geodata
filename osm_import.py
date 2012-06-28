@@ -66,8 +66,8 @@ class OSMHandler(handler.ContentHandler):
             self.es.index(result, 'poi')
 
     def endDocument(self):
-        print self.es.count_updated
-        print self.es.count_created
+        print "Updated: ", self.es.count_updated
+        print "Created: ", self.es.count_created
 
 if __name__ == '__main__':
     config = {

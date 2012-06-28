@@ -16,16 +16,24 @@ class ElasticSearch(object):
         self.count_updated = 0
 
 
-    def index(self, doc, doc_type, identifier_field_name='identifiers', *args, **kwargs):
-        q = TermsQuery(identifier_field_name, doc[identifier_field_name])
+    def index(self, pending_document, doc_type, identifier_field_name='identifiers', *args, **kwargs):
+        q = TermsQuery(identifier_field_name, pending_document[identifier_field_name])
         results = self.connection.search(q, indices=self.index_name)
         results = list(results)
         if len(results) == 0:
-            self.connection.index(doc, self.index_name, doc_type, *args, **kwargs)
+            self.connection.index(pending_document, self.index_name, doc_type, *args, **kwargs)
             self.count_created += 1
         elif len(results) == 1:
-            old_doc = results[0]
-            old_doc.update(doc)
+            current_doc = results[0]
+            current_idents = current_doc[identifier_field_name]
+            pending_idents = pending_document[identifier_field_name]
+            merged_idents = pending_idents.extend(current_idents)
+            current_doc.update(pending_document)
+            current_doc[identifier_field_name] = merged_idents
+            if merged_idents is None:
+                print "Current: ", current_idents
+                print "Pending: ", pending_idents
+            self.connection.update(current_doc, self.index_name, doc_type, current_doc.get_id(), *args, **kwargs)
             self.count_updated += 1
         elif len(results) > 1:
-            raise Exception("Too many results! %s" % doc[identifier_field_name])
+            raise Exception("Too many results! %s" % pending_document[identifier_field_name])
