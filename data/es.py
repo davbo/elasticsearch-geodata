@@ -27,7 +27,8 @@ class ElasticSearch(object):
             current_doc = results[0]
             current_idents = current_doc[identifier_field_name]
             pending_idents = pending_document[identifier_field_name]
-            merged_idents = pending_idents.extend(current_idents)
+            pending_idents.extend(current_idents)
+            merged_idents = list(set(pending_idents))
             current_doc.update(pending_document)
             current_doc[identifier_field_name] = merged_idents
             if merged_idents is None:
