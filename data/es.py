@@ -38,3 +38,7 @@ class ElasticSearch(object):
             self.count_updated += 1
         elif len(results) > 1:
             raise Exception("Too many results! %s" % pending_document[identifier_field_name])
+
+    def query(self, q):
+        results = self.connection.search(q, indices=self.index_name)
+        return results
