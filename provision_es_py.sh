@@ -4,6 +4,8 @@ sudo apt-get install openjdk-7-jre -y
 sudo apt-get install python-pip curl -y
 sudo pip install virtualenvwrapper
 
+source /usr/local/bin/virtualenvwrapper.sh
+
 wget https://github.com/downloads/elasticsearch/elasticsearch/elasticsearch-0.19.6.tar.gz -O elasticsearch.tar.gz
 tar -xf elasticsearch.tar.gz
 rm elasticsearch.tar.gz
