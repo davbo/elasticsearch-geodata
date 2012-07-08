@@ -6,7 +6,7 @@ sudo pip install virtualenvwrapper
 
 source /usr/local/bin/virtualenvwrapper.sh
 
-wget https://github.com/downloads/elasticsearch/elasticsearch/elasticsearch-0.19.6.tar.gz -O elasticsearch.tar.gz
+wget https://github.com/downloads/elasticsearch/elasticsearch/elasticsearch-0.19.8.tar.gz -O elasticsearch.tar.gz
 tar -xf elasticsearch.tar.gz
 rm elasticsearch.tar.gz
 sudo mv elasticsearch-* elasticsearch
