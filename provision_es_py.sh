@@ -20,3 +20,6 @@ sudo ln -s `readlink -f /usr/local/share/elasticsearch/bin/service/elasticsearch
 
 sudo service elasticsearch start
 #curl http://localhost:9200
+
+sudo /usr/local/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head
+# http://33.33.33.10:9200/_plugin/head/
