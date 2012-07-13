@@ -52,3 +52,39 @@ Same query than before but the actual query should be as following:
 
 Values such as boost, min_similarity can be added along with value.
 
+## Geo distance facet
+
+    curl -XGET http://127.0.0.1:9200/places/_search?pretty=true -d '{
+        "query": {
+            "fuzzy": { "name": { "value": "taylors" }}
+        },
+        "facets": {
+            "geo": {
+                "geo_distance": { 
+                    "location": { "lat": 51.7605390, "lon": -1.2601904 },
+                    "ranges": [ 
+                        {"to": 1}, 
+                        {"from": 1, "to": 3}, 
+                        {"from": 3, "to": 5}, 
+                        {"from": 5}]}}},
+        "sort": [{
+            "_geo_distance": {
+                "location": [-1.2601904, 51.7605390],
+                "order": "asc",
+                "unit": "km"
+            }}
+            ],
+        "fields": [
+            "_source"
+        ],
+        "script_fields": {
+            "distance": {
+                "params": {
+                    "lat": 51.7605390,
+                    "lon": -1.2601904
+                },
+                "script": "doc[\u0027location\u0027].arcDistanceInKm(lat, lon)"
+            }
+        }
+    }'
+
