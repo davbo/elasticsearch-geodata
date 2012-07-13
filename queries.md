@@ -6,7 +6,7 @@ On all documents,
 - filter to documents distant to X km from a given lat/lon point
 - sort by distance to this point
 - include a field containing the distance in km to the given lat/lon point
-NOTE: _geo_distance takes lon/lat (instead of lon/lat) due to GeoJSON format, see https://github.com/elasticsearch/elasticsearch/issues/1885
+NOTE: _geo_distance takes lon/lat (instead of lat/lon) due to GeoJSON format, see https://github.com/elasticsearch/elasticsearch/issues/1885
 
     curl -XGET http://127.0.0.1:9200/places/_search?pretty=true -d '{
       "query": {
