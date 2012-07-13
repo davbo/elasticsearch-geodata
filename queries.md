@@ -41,3 +41,14 @@ NOTE: _geo_distance takes lon/lat (instead of lat/lon) due to GeoJSON format, se
         }
       }
     }'
+
+## Search for a place by its name (fuzzy) around a given lat/lon point
+
+Same query than before but the actual query should be as following:
+
+    "query": {
+        "fuzzy": { "name": { "value": "taylors" }}
+    },
+
+Values such as boost, min_similarity can be added along with value.
+
