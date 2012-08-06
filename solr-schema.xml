@@ -9,7 +9,7 @@
         <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="true" />
 
         <!-- e.g. "Oxford University Computing Services" -->
-        <field name="name" type="text_en" indexed="true" stored="true" required="true" />
+        <field name="name" type="text_en_splitting" indexed="true" stored="true" required="true" />
 
         <!-- location - can't be multiValued atm, see fieldType -->
         <field name="location" type="location" indexed="true" stored="true" required="true" multiValued="false" />
@@ -17,6 +17,8 @@
         <!-- all other fields are stored as string atm -->
         <dynamicField name="raw_*" type="string" indexed="false" stored="true" />
     </fields>
+
+    <uniqueKey>id</uniqueKey>
 
     <types>
 
