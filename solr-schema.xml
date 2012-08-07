@@ -19,7 +19,7 @@
         <dynamicField name="*_coordinate" type="tdouble" indexed="true" stored="false" />
 
         <!-- all other fields are stored as string atm -->
-        <dynamicField name="raw_*" type="string" indexed="false" stored="true" />
+        <dynamicField name="raw_*" type="string" indexed="false" stored="true" multiValued="true" />
     </fields>
 
     <!-- UniqueKey is not mandatory (except if we want the QueryElevation component (which allows
