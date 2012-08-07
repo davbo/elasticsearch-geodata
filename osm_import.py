@@ -3,6 +3,7 @@ import logging
 
 from xml.sax import handler, make_parser
 from data.es import ElasticSearch
+from data.solr import Solr
 
 h = logging.StreamHandler()
 logger = logging.getLogger(__name__)
@@ -13,7 +14,8 @@ INDEX_NAME = "places"
 class OSMHandler(handler.ContentHandler):
 
     def __init__(self, config, mappings):
-        self.es = ElasticSearch('http://127.0.0.1:9200', 'places', config, mappings)
+        self.solr = Solr('')
+        #self.es = ElasticSearch('http://127.0.0.1:9200', 'places', config, mappings)
 
     def startDocument(self):
         self.tags = {}
@@ -63,11 +65,11 @@ class OSMHandler(handler.ContentHandler):
             # For example, post boxes and car parks.
             result['name'] = self.tags.get('name', self.tags.get('operator', None))
             result['location'] = location
-            self.es.index(result, 'poi')
+            self.solr.index(result, 'poi')
 
     def endDocument(self):
-        print "Updated: ", self.es.count_updated
-        print "Created: ", self.es.count_created
+        print "Updated: ", self.solr.count_updated
+        print "Created: ", self.solr.count_created
 
 if __name__ == '__main__':
     config = {

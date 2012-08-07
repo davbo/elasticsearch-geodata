@@ -1,10 +1,12 @@
 from data.es import ElasticSearch
+from data.solr import Solr
 from xml.sax import handler, make_parser
 
 
 class NaptanXMLHandler(handler.ContentHandler):
     def __init__(self, areas, config, mappings):
-        self.es = ElasticSearch('http://127.0.0.1:9200', 'places', config, mappings)
+        self.solr = Solr('')
+        #self.es = ElasticSearch('http://127.0.0.1:9200', 'places', config, mappings)
         self.areas = areas
         self.prev_tag = None
         self.data = None
@@ -42,9 +44,9 @@ class NaptanXMLHandler(handler.ContentHandler):
             data['identifiers'] = ["atco:%s" % result['AtcoCode']]
             data['location'] = location
             data['name'] = name
-            self.es.index(data, 'poi')
-        print "Updated: ", self.es.count_updated
-        print "Created: ", self.es.count_created
+            self.solr.index(data, 'poi')
+        print "Updated: ", self.solr.count_updated
+        print "Created: ", self.solr.count_created
 
 
 

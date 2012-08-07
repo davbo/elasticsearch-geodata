@@ -1,11 +1,13 @@
 from data.es import ElasticSearch
+from data.solr import Solr 
 import json
 
 
 class OxpointsImporter(object):
     
     def __init__(self, config, mappings):
-        self.es = ElasticSearch('http://127.0.0.1:9200', 'places', config, mappings)
+        self.solr = Solr('')
+        #self.es = ElasticSearch('http://127.0.0.1:9200', 'places', config, mappings)
 
     def import_data(self):
         dump = open('oxpoints.json')
@@ -41,9 +43,9 @@ class OxpointsImporter(object):
             # Added raw_ for Solr...
             index.update([('raw_oxpoints:{0}'.format(k), v) for k, v in datum.items()])
 
-            self.es.index(index, 'poi')
-        print "Updated: {0}".format(self.es.count_updated)
-        print "Created: {0}".format(self.es.count_created)
+            self.solr.index(index, 'poi')
+        print "Updated: {0}".format(self.solr.count_updated)
+        print "Created: {0}".format(self.solr.count_created)
 
 
 if __name__ == '__main__':
