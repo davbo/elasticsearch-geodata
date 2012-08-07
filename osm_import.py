@@ -52,9 +52,9 @@ class OSMHandler(handler.ContentHandler):
                 max_ = max(max_[0], lon), max(max_[1], lat)
             location = (min_[0] + max_[0]) / 2, (min_[1] + max_[1]) / 2
         if element_type in ['way', 'node'] and any([x in self.tags for x in ['amenity', 'naptan:AtcoCode']]):
-            result = dict([('osm:%s' % k, v) for k, v in self.tags.items()])
-            result['osm:type'] = element_type
-            result['osm:version'] = self.attrs['version']
+            result = dict([('raw_osm:%s' % k, v) for k, v in self.tags.items()])
+            result['raw_osm:type'] = element_type
+            result['raw_osm:version'] = self.attrs['version']
             result['identifiers'] = ['osm:%s' % self.id]
             atco = self.tags.get('naptan:AtcoCode', None)
             if atco:

@@ -38,7 +38,7 @@ class NaptanXMLHandler(handler.ContentHandler):
         for result in self.results:
             name = result['CommonName']
             location = {'lon': result.pop('Longitude'), 'lat': result.pop('Latitude')}
-            data = dict([('naptan:%s' % k, v) for k, v in result.items()])
+            data = dict([('raw_naptan:%s' % k, v) for k, v in result.items()])
             data['identifiers'] = ["atco:%s" % result['AtcoCode']]
             data['location'] = location
             data['name'] = name

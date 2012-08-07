@@ -38,7 +38,8 @@ class OxpointsImporter(object):
             if 'geo_lat' in datum and 'geo_long' in datum:
                 index['location'] = {'lon': datum.pop('geo_long'), 'lat': datum.pop('geo_lat')}
 
-            index.update([('oxpoints:{0}'.format(k), v) for k, v in datum.items()])
+            # Added raw_ for Solr...
+            index.update([('raw_oxpoints:{0}'.format(k), v) for k, v in datum.items()])
 
             self.es.index(index, 'poi')
         print "Updated: {0}".format(self.es.count_updated)
