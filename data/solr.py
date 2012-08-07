@@ -1,4 +1,4 @@
-from sunburnt import Solr
+import sunburnt
 
 class Solr(object):
 
@@ -21,14 +21,19 @@ class Solr(object):
         # prepare document for solr format
 
         # lat,lon e.g. <field name="geo">43.17614,-90.57341</field>
-        pending_document['location'] = "{0},{1}".format(pending_document['location'].get('lat'),
+        try:
+            pending_document['location'] = "{0},{1}".format(pending_document['location'].get('lat'),
                 pending_document['location'].get('lon'))
+        except AttributeError:
+            # sometimes, it is a tuple...
+            pending_document['location'] = "{0},{1}".format(pending_document['location'][0],
+                    pending_document['location'][1])
 
         # named id instead of identifiers...
-        pending_document[IDS_FIELD] = pending_document.pop(identifier_field_name)
+        pending_document[self.IDS_FIELD] = pending_document.pop(identifier_field_name)
         # adding unique ID field, this will be used to update document. Order of IDs *should NOT* change
-        # over time, not entirely sure if we can trust that
-        pending_document[UNIQUE_ID_FIELD] = pending_document[IDS_FIELD][0]
+        # over time, not entirely sure if we can trust that
+        pending_document[self.UNIQUE_ID_FIELD] = pending_document[self.IDS_FIELD][0]
 
         if len(results) == 0:
             self.connection.add(pending_document)
@@ -36,12 +41,12 @@ class Solr(object):
         elif len(results) == 1:
             # TODO this IDs merging process should be extracted from this method, and tested
             current_doc = results[0]
-            current_idents = current_doc[IDS_FIELD]
-            pending_idents = pending_document[IDS_FIELD]
+            current_idents = current_doc[self.IDS_FIELD]
+            pending_idents = pending_document[self.IDS_FIELD]
             pending_idents.extend(current_idents)
             merged_idents = list(set(pending_idents))
             current_doc.update(pending_document)
-            current_doc[IDS_FIELD] = merged_idents
+            current_doc[self.IDS_FIELD] = merged_idents
             if merged_idents is None:
                 print "Current: ", current_idents
                 print "Pending: ", pending_idents

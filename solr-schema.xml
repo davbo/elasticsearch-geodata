@@ -16,6 +16,7 @@
 
         <!-- location - can't be multiValued atm, see fieldType -->
         <field name="location" type="location" indexed="true" stored="true" required="true" multiValued="false" />
+        <dynamicField name="*_coordinate" type="tdouble" indexed="true" stored="false" />
 
         <!-- all other fields are stored as string atm -->
         <dynamicField name="raw_*" type="string" indexed="false" stored="true" />
@@ -36,6 +37,16 @@
         <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
 
         <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate" />
+        <!-- used by dnyamic field "_coordinate" -->
+        <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" positionIncrementGap="0"/>
+
+        <!-- Solr / Lucene 4, not available with 4.0.0-ALPHA -->
+        <!--<fieldType name="geo"
+            class="org.apache.solr.spatial.RecursivePrefixTreeFieldType"
+            distErrPct="0.025"
+            maxDetailDist="0.001"
+            />-->
+
 
         <!-- A text field with defaults appropriate for English: it
             tokenizes with StandardTokenizer, removes English stop words
