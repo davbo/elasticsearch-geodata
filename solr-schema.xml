@@ -8,6 +8,9 @@
         <!-- e.g. ID: osm:1938450 TODO: be able to search by part of ID? like naptan code-->
         <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="true" />
 
+        <!-- first ID of the document, quick fix, should be replaced by something else -->
+        <field name="uniqueId" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+
         <!-- e.g. "Oxford University Computing Services" -->
         <field name="name" type="text_en_splitting" indexed="true" stored="true" required="true" />
 
@@ -24,6 +27,8 @@
          doesn't work (atm?) with multiValued=true...
     <uniqueKey>id</uniqueKey>
     -->
+    <!-- Actually, we need it for updating documents, below is a temporary solution... -->
+    <uniqueKey>uniqueId</uniqueKey>
 
     <types>
 
