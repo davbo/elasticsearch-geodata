@@ -18,7 +18,12 @@
         <dynamicField name="raw_*" type="string" indexed="false" stored="true" />
     </fields>
 
+    <!-- UniqueKey is not mandatory (except if we want the QueryElevation component (which allows
+         to alter top results if we want to return custom... results)), but it would be nice to have to
+         enforce the fact that one document, and only one, should have this ID (no duplicate), unfortunately, it
+         doesn't work (atm?) with multiValued=true...
     <uniqueKey>id</uniqueKey>
+    -->
 
     <types>
 
