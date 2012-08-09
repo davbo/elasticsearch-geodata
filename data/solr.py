@@ -15,6 +15,12 @@ class Solr(object):
     # only what we need from an app pov.
     # "identifiers" is what is used in providers atm
     def index(self, pending_document, doc_type, identifier_field_name='identifiers', *args, **kwargs):
+        #clauses = []
+        #for identifier in pending_document[identifier_field_name]:
+        #    clauses.add(self.connection.Q(identifier))
+        ##results = self.connection.query(Q("osm:XY") or Q("oxpoints:DJ"))
+        #results = self.connection.query([clause or for clause in clauses] 
+        # Query below does an AND search between IDs, we want an OR
         results = self.connection.query(id=pending_document[identifier_field_name]).execute()
         results = list(results)
 
@@ -53,7 +59,7 @@ class Solr(object):
             self.connection.add(current_doc) 
             self.count_updated += 1
         elif len(results) > 1:
-            raise Exception("Too many results! %s" % pending_document[identifier_field_name])
+            raise Exception("Too many results! %s" % pending_document[self.IDS_FIELD])
 
     def query(self, q):
         return self.connection.query(q).execute()
