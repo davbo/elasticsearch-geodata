@@ -1,6 +1,7 @@
 from data.es import ElasticSearch
 from data.solr import Solr 
 import json
+import re
 
 
 class OxpointsImporter(object):
@@ -29,9 +30,11 @@ class OxpointsImporter(object):
             if 'oxp_hasOUCSCode' in datum:
                 ids.append('oucs:{0}'.format(datum.pop('oxp_hasOUCSCode')))
             if 'oxp_hasOLISCode' in datum:
-                ids.append('olis:{0}'.format(datum.pop('oxp_hasOLISCode')))
+                olis_codes = datum.pop('oxp_hasOLISCode')
+                for code in olis_codes:
+                    ids.append('olis:{0}'.format(code.replace(' ', '-')))
             if 'oxp_hasOLISAlephCode' in datum:
-                ids.append('olis-aleph:{0}'.format(datum.pop('oxp_hasOLISAlephCode')))
+                ids.append('olis-aleph:{0}'.format(re.escape(datum.pop('oxp_hasOLISAlephCode').replace('/', '-'))))
             if 'oxp_hasOSMIdentifier' in datum:
                 ids.append('osm:{0}'.format(datum.pop('oxp_hasOSMIdentifier').split('/')[1]))
 
